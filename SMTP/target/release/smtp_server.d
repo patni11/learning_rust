@@ -1,0 +1,1 @@
+/Users/xenox/Documents/Coadddding/rust/rust_basics/SMTP/target/release/smtp_server: /Users/xenox/Documents/Coadddding/rust/rust_basics/SMTP/src/lib.rs /Users/xenox/Documents/Coadddding/rust/rust_basics/SMTP/src/main.rs /Users/xenox/Documents/Coadddding/rust/rust_basics/SMTP/src/server.rs
