@@ -1,0 +1,1 @@
+/Users/xenox/Documents/Coadddding/rust/rust_basics/pngme/target/debug/pngme: /Users/xenox/Documents/Coadddding/rust/rust_basics/pngme/src/chunk_type.rs /Users/xenox/Documents/Coadddding/rust/rust_basics/pngme/src/main.rs
