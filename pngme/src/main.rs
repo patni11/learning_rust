@@ -1,17 +1,72 @@
 
 #![allow(unused_variables)]
 mod chunk;
+mod chunk_type;
 use crate::chunk::Chunk;
 use crate::chunk_type::ChunkType;
 use std::str::FromStr;
 use std::convert::TryFrom;
 
 
-fn main() {
+pub struct Png {
+    chunks: Vec<Chunk>,
+}
+
+impl Png{
+    pub const STANDARD_HEADER:[u8;8] = [137, 80, 78, 71, 13, 10, 26, 10];
+
+    fn from_chunks(chunks: Vec<Chunk>) -> Png{
+        Png { chunks: chunks }
+    }
+
+    fn chunks(&self) -> &[Chunk]{
+        &self.chunks
+    }
+}
+
+impl TryFrom<&[u8]> for Png{
+    type Error =  &'static str;
+    fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
+        let header_bytes = &Png::STANDARD_HEADER;
+
+        if value.len() < header_bytes.len() || &value[..header_bytes.len()] != header_bytes {
+            return Err("Invalid header");
+        }
+
+        let remaining_bytes = &value[header_bytes.len()..];
+
+        if remaining_bytes.len() < 12 {
+            return Err("Not enough data ");
+        }
+
+        let mut start = 0;
+        let mut end = remaining_bytes.len();
+
+        let mut chunks:Vec<Chunk> = vec![];
+
+        while start < end {
+            let length_bytes= &remaining_bytes[start..start+4];
+            let length = u32::from_be_bytes([length_bytes[0], length_bytes[1], length_bytes[2], length_bytes[3]]);
+            
+            //skipping bytes for chunk type
+            let mut current_chunk_end = start + length as usize + 8;
+            match Chunk::try_from(&remaining_bytes[start..=current_chunk_end]){
+                Ok(chunk) => {chunks.push(chunk);},
+                Err(e)=> {
+                    return Err("Invalid Chunk ")
+                }
+            }
+            start = current_chunk_end + 1;
+        }
+        
+        Ok(Png::from_chunks(chunks))
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
-
 
     fn testing_chunks() -> Vec<Chunk> {
         vec![
@@ -21,45 +76,46 @@ mod tests {
         ]
     }
 
-    // fn testing_png() -> Png {
-    //     let chunks = testing_chunks();
-    //     Png::from_chunks(chunks)
-    // }
+    fn testing_png() -> Png {
+        let chunks = testing_chunks();
+        Png::from_chunks(chunks)
+    }
 
-    // fn chunk_from_strings(chunk_type: &str, data: &str) -> Result<Chunk> {
-    //     use std::str::FromStr;
+    fn chunk_from_strings(_chunk_type: &str, _data: &str) -> Result<Chunk, &'static str> {
+        match ChunkType::from_str(_chunk_type){
+            Ok(chunk_type) =>{
+                let data: Vec<u8> = _data.bytes().collect();
+                Ok(Chunk::new(chunk_type,data))
+            },
+            Err(e)=> Err(e)
+        }
+    }
 
-    //     let chunk_type = ChunkType::from_str(chunk_type)?;
-    //     let data: Vec<u8> = data.bytes().collect();
+    #[test]
+    fn test_from_chunks() {
+        let chunks = testing_chunks();
+        let png = Png::from_chunks(chunks);
 
-    //     Ok(Chunk::new(chunk_type, data))
-    // }
+        assert_eq!(png.chunks().len(), 3);
+    }
 
-    // #[test]
-    // fn test_from_chunks() {
-    //     let chunks = testing_chunks();
-    //     let png = Png::from_chunks(chunks);
+    #[test]
+    fn test_valid_from_bytes() {
+        let chunk_bytes: Vec<u8> = testing_chunks()
+            .into_iter()
+            .flat_map(|chunk| chunk.as_bytes())
+            .collect();
 
-    //     assert_eq!(png.chunks().len(), 3);
-    // }
+        let bytes: Vec<u8> = Png::STANDARD_HEADER
+            .iter()
+            .chain(chunk_bytes.iter())
+            .copied()
+            .collect();
 
-    // #[test]
-    // fn test_valid_from_bytes() {
-    //     let chunk_bytes: Vec<u8> = testing_chunks()
-    //         .into_iter()
-    //         .flat_map(|chunk| chunk.as_bytes())
-    //         .collect();
+        let png = Png::try_from(bytes.as_ref());
 
-    //     let bytes: Vec<u8> = Png::STANDARD_HEADER
-    //         .iter()
-    //         .chain(chunk_bytes.iter())
-    //         .copied()
-    //         .collect();
-
-    //     let png = Png::try_from(bytes.as_ref());
-
-    //     assert!(png.is_ok());
-    // }
+        assert!(png.is_ok());
+    }
 
     // #[test]
     // fn test_invalid_header() {
@@ -415,4 +471,6 @@ mod tests {
         160, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130,
     ];
 }
+
+fn main() {
 }

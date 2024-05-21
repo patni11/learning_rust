@@ -1,12 +1,12 @@
 #![allow(unused_variables)]
-mod chunk_type;
+//mod chunk_type;
+use crate::chunk_type::ChunkType;
+
 use std::convert::TryFrom;
 use std::convert::TryInto;
 use std::fmt::write;
 //use crc::{crc32, Hasher32};
 use crc::{Crc, CRC_32_ISO_HDLC};
-// Import ChunkType from the declared module
-use crate::chunk_type::ChunkType;
 
 #[derive(Debug)]
 pub struct Chunk {
@@ -96,6 +96,24 @@ impl Chunk {
             Ok(string_data) => Ok(string_data.to_string()),
             Err(e) => Err(e)
         }
+    }
+
+    pub fn as_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+
+        // Convert length to bytes and append
+        bytes.extend(&self.length.to_be_bytes());
+
+        // Get the bytes of chunk_type and append
+        bytes.extend(&self.chunk_type.bytes());
+
+        // Append the data bytes
+        bytes.extend(&self.data);
+
+        // Convert crc to bytes and append
+        bytes.extend(&self.crc.to_be_bytes());
+
+        bytes
     }
 }
 
