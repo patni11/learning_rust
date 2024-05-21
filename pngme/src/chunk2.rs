@@ -9,12 +9,41 @@ use crc::{Crc, CRC_32_ISO_HDLC};
 use crate::chunk_type::ChunkType;
 
 #[derive(Debug)]
-pub struct Chunk {
+struct Chunk {
     length: u32,
     chunk_type:ChunkType,
     data: Vec<u8>,
     crc:u32
 }
+
+// #[derive(Debug)]
+// enum ChunkError{
+//     InvalidChunkType,
+//     InvalidChunkData,
+//     InvalidCRC
+// }
+
+// impl std::fmt::Display for ChunkError {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         match self {
+//             ChunkError::InvalidChunkType => write!(f, "Invalid Chunk Type"),
+//             ChunkError::InvalidChunkData => write!(f, "Invalid Chunk Data String"),
+//             ChunkError::InvalidCRC => write!(f, "Couldn't Create CRC")
+//             // Add more error messages for additional variants
+//         }
+//     }
+// }
+
+// impl From<&str> for ChunkError {
+//     fn from(s: &str) -> Self {
+//         match s {
+//             "InvalidChunkType" => ChunkError::InvalidChunkType,
+//             "InvalidChunkData" => ChunkError::InvalidChunkData,
+//             "InvalidCRC" => ChunkError::InvalidCRC,
+//             _ => ChunkError::UnknownError,
+//         }
+//     }
+// }
 
 impl std::fmt::Display for Chunk {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -65,6 +94,16 @@ impl TryFrom<&[u8]> for Chunk {
 impl Chunk {
     pub fn new(chunk_type: ChunkType, data:Vec<u8>) -> Chunk{
         let length = data.len() as u32;
+        // let mut bytes = Vec::new();
+        // bytes.extend_from_slice(&chunk_type.bytes());
+        // bytes.extend_from_slice(&data);
+        // let crc = crc32::checksum_ieee(&bytes);
+
+        // let crc = Crc::<u32>::new(&CRC_32_ISO_HDLC);
+        // let mut digest = crc.digest();
+        // digest.update(&chunk_type.bytes());
+        // digest.update(&data);
+        // let final_crc = digest.finalize();
 
         let crc = Chunk::calculate_crc(&chunk_type.bytes(), &data);
 
@@ -100,7 +139,9 @@ impl Chunk {
 }
 
 fn main() {
-    #[cfg(test)]
+}
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::chunk_type::ChunkType;
@@ -229,8 +270,4 @@ mod tests {
     }
 
 }
-
-
-}
-
 
