@@ -118,7 +118,10 @@ impl TryFrom<&[u8]> for Png{
 }
 
 
-#[cfg(test)]
+
+
+fn main() {
+    #[cfg(test)]
 mod tests {
     use super::*;
 
@@ -525,6 +528,4 @@ mod tests {
         160, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130,
     ];
 }
-
-fn main() {
 }
