@@ -18,7 +18,7 @@ pub struct Chunk {
 
 impl std::fmt::Display for Chunk {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}, {}, {:?}, {}", self.length, self.chunk_type, self.data,self.crc )
+        write!(f, "{}, {}, {:?}, {}", self.length, self.chunk_type.to_string(), self.data_as_string(),self.crc )
     }
 }
 

@@ -1,7 +1,7 @@
 
 #![allow(unused_variables)]
-mod chunk;
-mod chunk_type;
+// mod chunk;
+// mod chunk_type;
 use crate::chunk::Chunk;
 use crate::chunk_type::ChunkType;
 use std::str::FromStr;
@@ -23,7 +23,7 @@ impl Png{
         &self.chunks
     }
 
-    fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk>{
+    pub fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk>{
         let chunks = &self.chunks;
         let chunk = ChunkType::from_str(chunk_type).unwrap();
 
@@ -37,10 +37,10 @@ impl Png{
         None
     }
 
-    fn append_chunk(&mut self, chunk: Chunk){
+    pub fn append_chunk(&mut self, chunk: Chunk){
         self.chunks.push(chunk);
     }
-    fn remove_chunk(&mut self, chunk_type: &str) -> Result<Chunk, &str>{
+    pub fn remove_chunk(&mut self, chunk_type: &str) -> Result<Chunk, &str>{
         let chunks = &self.chunks;
         let chunk = ChunkType::from_str(chunk_type).unwrap();
 
@@ -53,7 +53,7 @@ impl Png{
         Err("Could not find the chunk")
     }
 
-    fn as_bytes(&self) -> Vec<u8>{
+    pub fn as_bytes(&self) -> Vec<u8>{
         let mut bytes:Vec<u8>= Vec::new();
         bytes.extend_from_slice(&Png::STANDARD_HEADER);
         let chunks = &self.chunks;
@@ -118,6 +118,16 @@ impl TryFrom<&[u8]> for Png{
 }
 
 
+pub fn chunk_from_strings(_chunk_type: &str, _data: &str) -> Result<Chunk, &'static str> {
+    match ChunkType::from_str(_chunk_type){
+        Ok(chunk_type) =>{
+            let data: Vec<u8> = _data.bytes().collect();
+            Ok(Chunk::new(chunk_type,data))
+        },
+        Err(e)=> Err(e)
+    }
+}
+
 
 
 fn main() {
@@ -138,15 +148,15 @@ mod tests {
         Png::from_chunks(chunks)
     }
 
-    fn chunk_from_strings(_chunk_type: &str, _data: &str) -> Result<Chunk, &'static str> {
-        match ChunkType::from_str(_chunk_type){
-            Ok(chunk_type) =>{
-                let data: Vec<u8> = _data.bytes().collect();
-                Ok(Chunk::new(chunk_type,data))
-            },
-            Err(e)=> Err(e)
-        }
-    }
+    // fn chunk_from_strings(_chunk_type: &str, _data: &str) -> Result<Chunk, &'static str> {
+    //     match ChunkType::from_str(_chunk_type){
+    //         Ok(chunk_type) =>{
+    //             let data: Vec<u8> = _data.bytes().collect();
+    //             Ok(Chunk::new(chunk_type,data))
+    //         },
+    //         Err(e)=> Err(e)
+    //     }
+    // }
 
     #[test]
     fn test_from_chunks() {
