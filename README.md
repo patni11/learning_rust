@@ -4,8 +4,14 @@ I finished till chapter 6 and then started working on projets. I know concepts l
 
 I like to build projects while learning so here are some projects I implemented in this repo
 
+## SMTP
+
     - SMTP: I learned to build a [SMTP server in Rust](https://notes.eatonphil.com/handling-email-from-gmail-smtp-protocol-basics.html) by following this tutorial by phil eaton https://notes..
 
 This is in Go so you can't just copy it. I used chat gpt to convert some parts of it in Rust and a lot of it I wrote on my own
 
-    - pngme:
+## PNGME
+
+To finish this project, I had to understand the concepts till chapter 11. Some concepts like Option, Result, Packages, crates etc, I learned along the way without directly refering the book
+
+    - pngme: Png me is a intermediate level rust project. It teaches you how to endcode and decode data into png files. The guide simply guides you through the process but the exact implementation is left to you. The author has provided some test cases to nudge you in the expected direction
