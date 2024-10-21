@@ -15,3 +15,18 @@ This is in Go so you can't just copy it. I used chat gpt to convert some parts o
 To finish this project, I had to understand the concepts till chapter 11. Some concepts like Option, Result, Packages, crates etc, I learned along the way without directly refering the book
 
     - pngme: Png me is a intermediate level rust project. It teaches you how to endcode and decode data into png files. The guide simply guides you through the process but the exact implementation is left to you. The author has provided some test cases to nudge you in the expected direction
+
+## Lending Pool Yield Optimization
+
+fill in these values in .env
+
+```
+PRIVATE_KEY=
+NETWORK_RPC=
+```
+
+Use the following command to watch for changes and automatically run the project:
+
+```
+cargo watch -q -c -w src/ -x run
+```
