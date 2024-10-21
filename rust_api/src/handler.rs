@@ -1,11 +1,9 @@
 use crate::{
-    manage_pool::PoolRequest, 
-    response::{GenericResponse, PoolAllocation, PoolRequestListResponse},
-    WebResult, DB,
+    config::Config, lib::utils::address, manage_pool::{ChainBasedPoolModel, PoolRequest, PoolType}, pools::aave::{self, AaveV3DefaultInterestRatePool}, response::{GenericResponse, PoolRequestListResponse}, WebResult, DB
 };
 use chrono::prelude::*;
 use warp::{http::StatusCode, reply::json, reply::with_status, Reply};
-use collections::HashMap;
+//use std::collections::HashMap;
 
 pub async fn hello() -> WebResult<impl Reply> {
     const MESSAGE: &str = "Hello, World!"; // the message to return
@@ -28,21 +26,21 @@ pub async fn pool_request_list(db:DB) -> WebResult<impl Reply> {
     Ok(json(&json_response))
 }
 
-fn get_pool_allocation(poolData: &PoolRequest) -> PoolAllocation {
-    let pools = poolData.pools;
-    let total_assets = poolData.total_assets;
-    let mut allocations = HashMap::new();
+// fn get_pool_allocation(poolData: &PoolRequest) -> PoolAllocation {
+//     let pools = poolData.pools;
+//     let total_assets = poolData.total_assets;
+//     let mut allocations = HashMap::new();
 
-}
+// }
 
 pub async fn receive_pool_handler(mut body:PoolRequest, db:DB) -> WebResult<impl Reply> {
     let mut vec = db.lock().await; 
 
-    for pool in vec.iter(){
-        if pool.id == body.id{
+    for pool_req in vec.iter(){
+        if pool_req.id == body.id{
             let error_message = &GenericResponse{
                 status: "error".to_string(),
-                message:  format!("Pool already exists: {}", pool.id)  
+                message:  format!("pool_req already exists: {}", pool_req.id)  
             };
             return Ok(with_status(json(&error_message), StatusCode::CONFLICT))            
         }
@@ -51,6 +49,18 @@ pub async fn receive_pool_handler(mut body:PoolRequest, db:DB) -> WebResult<impl
     body.timestamp = Utc::now(); 
     let pool = body.to_owned();
 
+    for (pool_id, pool) in body.pools.iter() {
+        if pool.pool_type == PoolType::Aave {
+            // Logic for Aave pools
+            println!("Found an Aave pool with ID: {}", pool_id);
+            let config = Config::new().await;            
+        
+            // Call the pool_init method to initialize the pool asynchronously            
+            let aavePool = AaveV3DefaultInterestRatePool::pool_init(config.http, address(&pool.contract_address)).await;
+            println!("Created the Aave Pool Successfully for address {}", aavePool.underlying_asset_address())
+        }
+    }
+    
     vec.push(body);
     let json_response = &GenericResponse {
         status: "success".to_string(),

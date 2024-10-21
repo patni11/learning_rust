@@ -12,3 +12,6 @@ uuid = { version = "1.11.0", features = ["v4"] }
 warp = "0.3.7"
 ethers = "2.0"
 serde_json = "1.0"
+lazy_static = "1.4"
+rand = "0.8"
+dotenv = "0.15"

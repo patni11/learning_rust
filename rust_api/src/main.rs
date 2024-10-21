@@ -3,8 +3,15 @@ use warp::{http::Method, Filter, Rejection};
 mod manage_pool;
 mod response;
 mod handler;
-use manage_pool::{DB};
+mod config;
+mod lib{
+    pub mod utils;
+}
+mod pools {
+    pub mod aave;
+}
 
+use manage_pool::{DB};
 // the result would either be any type T or Rejection
 type WebResult<T> = std::result::Result<T, Rejection>;
 //idk
@@ -25,7 +32,6 @@ async fn main() {
     .allow_origins(vec!["http://localhost:3000/", "http://localhost:8000/"])
     .allow_headers(vec!["content-type"]);
     
-    let routes = hello.with(warp::log("api"));
     let pool_routes = pools_router
     .and(warp::post())
     .and(warp::body::json())
