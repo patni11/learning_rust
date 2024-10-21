@@ -30,3 +30,38 @@ Use the following command to watch for changes and automatically run the project
 ```
 cargo watch -q -c -w src/ -x run
 ```
+
+test data, put on body for this url - http://localhost:8000/api/pools
+
+```
+{
+  "id": "pool-request-1423",
+  "validator": "validator-abc",
+  "timestamp": "2023-02-20T14:30:00.000Z",
+  "total_assets": "1000000000000000000",
+  "pools": {
+    "pool-1": {
+      "pool_model_disc": "model-1",
+      "contract_address": "0x1234567890abcdef",
+      "pool_type": "Synthetic",
+      "base_rate": "100000000000000000",
+      "base_slope": "200000000000000000",
+      "kink_slope": "300000000000000000",
+      "optimal_util_rate": "400000000000000000",
+      "borrow_amount": "500000000000000000",
+      "reserve_size": "600000000000000000"
+    },
+    "pool-2": {
+      "pool_model_disc": "model-2",
+      "contract_address": "0x9876543210fedcba",
+      "pool_type": "Synthetic",
+      "base_rate": "700000000000000000",
+      "base_slope": "800000000000000000",
+      "kink_slope": "900000000000000000",
+      "optimal_util_rate": "1000000000000000000",
+      "borrow_amount": "1100000000000000000",
+      "reserve_size": "1200000000000000000"
+    }
+  }
+}
+```
